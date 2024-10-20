@@ -18,7 +18,6 @@ func threadExample() {
 	wg.Add(1)
 	go func() {
 		defer wg.Done()
-		doStuff()
 	}()
 
 	wg.Add(1)
