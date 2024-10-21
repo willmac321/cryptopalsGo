@@ -1,5 +1,6 @@
-# 
+# Cryptopals workthrough
 
+This is a repo that I created while working through the [cryptopals](https://cryptopals.com) challenges.  Decided to use golang since it's become my choice for doing ctfs and its a bit of a new language that is very close to C.
 
 
 ### Future work

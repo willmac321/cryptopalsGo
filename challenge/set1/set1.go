@@ -1,8 +1,12 @@
 package challenge
 
 import (
+	"crypto/aes"
 	utils "cryptoGo/util"
+	"fmt"
 )
+
+type fn func([]byte, []byte) []byte
 
 func ConvertHexToBase64(hexstr string) (string, error) {
 	_, dst := utils.HexToByte(hexstr)
@@ -18,20 +22,20 @@ func FixedXOR(str string, key string) (string, error) {
 	_, dsts := utils.HexToByte(str)
 	_, dstk := utils.HexToByte(key)
 
-	val, e := utils.XOR(dsts, dstk)
+	val := utils.XOR(dsts, dstk)
 
 	rv := utils.ByteToHexString(val)
-	return rv, e
+	return rv, nil
 }
 
-func GetMostLikelyKeySingleByteXOR(dsts []byte) ([]byte, error) {
+func GetMostLikelyKeySingleByte(dsts []byte, converterFunc fn) ([]byte, error) {
 	weight := 0
 	rv := make([]byte, 1)
 
 	// find max byte val in map
 	for k := 0; k < 256; k++ {
 		b := []byte{byte(k)}
-		res, _ := utils.XOR(dsts, b)
+		res := converterFunc(dsts, b)
 		if v := utils.GetWeights(res); v > weight {
 			weight = v
 			rv = b
@@ -47,7 +51,7 @@ func SingleByteXOR(dsts []byte) ([]byte, error) {
 	// find max byte val in map
 	for k := 0; k < 256; k++ {
 		b := []byte{byte(k)}
-		res, _ := utils.XOR(dsts, b)
+		res := utils.XOR(dsts, b)
 		// compare the weights and find the min
 		if v := utils.GetWeights(res); v > weight {
 			weight = v
@@ -89,7 +93,7 @@ func RepeatingKeyXOR(valueB []byte, keyB []byte) ([]byte, error) {
 		repeatKeyB = append(repeatKeyB, keyB[(offset+i)%len(keyB)])
 	}
 
-	res, _ := utils.XOR(valueB, repeatKeyB)
+	res := utils.XOR(valueB, repeatKeyB)
 
 	rv = append(rv, res...)
 	offset += len(valueB)
@@ -172,7 +176,7 @@ func BreakRepeatingXOR(byteArr []byte, minKey int, maxKey int, matches int) ([]b
 	transposedarr := BreakAndTransposeToBlocks(byteArr, keySize)
 	keyByteArr := make([]byte, keySize)
 	for i, transposed := range transposedarr {
-		res, _ := GetMostLikelyKeySingleByteXOR(transposed)
+		res, _ := GetMostLikelyKeySingleByte(transposed, utils.XOR)
 		keyByteArr[i] = res[0]
 	}
 
@@ -198,12 +202,48 @@ func IterateAndFindBestMatch(b []byte) ([]byte, []byte) {
 	return rv, key
 }
 
-func DecryptAES128(input []byte, key []byte) []byte {
-		
+func DecryptAES128ECB(input []byte, key []byte) []byte {
+	// using ecb so use the key length as block size, should be around 16bytes
+	block, e := aes.NewCipher(key)
+	if e != nil {
+		panic(e.Error())
+	}
+	// if len(input)%block.BlockSize() != 0 {
+	// 	panic("block size and input are not the same length")
+	// }
+	keysize := block.BlockSize()
+	decrypted := []byte{}
+	for i := 0; i < len(input); i += keysize {
+		b := make([]byte, block.BlockSize())
+		block.Decrypt(b, input[i:i+keysize])
+		decrypted = append(decrypted, b...)
+	}
+	return decrypted
 }
 
 func DecryptAES128Base64(input []byte, key []byte) []byte {
-	dec := DecryptAES128(input, key)
-	rv, _ := utils.Base64ByteToByte(dec)
+	bytes, _ := utils.Base64ByteToByte(input)
+	rv := DecryptAES128ECB(bytes, key)
+	return rv
+}
+
+func SingleByteAES128ECB(input []byte, key []byte) []byte {
+	keyLong := make([]byte, 16)
+	for i := 0; i < 16; i++ {
+		keyLong[i] = key[0]
+	}
+	rv := DecryptAES128ECB(input, keyLong)
+	return rv
+}
+
+func IdentifyAES128HexFromList(input []string, keylen int) []byte {
+	rv := make([]byte, len(input[0]))
+	for _, str := range input {
+		_, bytes := utils.HexToByte(str)
+		freqMap := utils.FindByteFrequency(bytes)
+		// find the best fit to 
+		// https://en.wikipedia.org/wiki/Letter_frequency
+	}
+
 	return rv
 }

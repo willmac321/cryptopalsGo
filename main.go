@@ -1,6 +1,9 @@
 package main
 
 import (
+	challenge "cryptoGo/challenge/set1"
+	utils "cryptoGo/util"
+	"fmt"
 	"log"
 	"sync"
 	"time"
@@ -8,6 +11,10 @@ import (
 
 func main() {
 	log.Println("running challenges")
+
+	strings:=utils.ReadFile("./data/challenge8.txt")
+		res := challenge.IdentifyAES128HexFromList(strings, 16)
+		fmt.Printf("%x\n", res)
 }
 
 func threadExample() {

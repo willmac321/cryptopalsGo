@@ -29,19 +29,20 @@ func Base64ToByte(s string) ([]byte, error) {
 }
 
 func Base64ByteToByte(b []byte) ([]byte, error) {
-	dst := []byte{}
+	n := base64.StdEncoding.DecodedLen(len(b))
+	dst := make([]byte, n)
 	base64.StdEncoding.Decode(dst, b)
 	return dst, nil
 }
 
-func XOR(str []byte, compare []byte) ([]byte, error) {
+func XOR(str []byte, compare []byte) []byte {
 	res := make([]byte, len(str))
 
 	for i := 0; i < len(str); i++ {
 		res[i] = str[i] ^ compare[i%len(compare)]
 	}
 
-	return res, nil
+	return res
 }
 
 func ByteArrArrToByteArr(rep [][]byte) []byte {

@@ -129,15 +129,32 @@ func TestChallenge6Simple(t *testing.T) {
 }
 
 func TestChallenge6(t *testing.T) {
+	exp := "I'm back and I'm ringin' the bell"
 	loadedFile := utils.ReadFile("../data/challenge6.txt")
 	joinStr := strings.Join(loadedFile, "")
 	byteArr, _ := utils.Base64ToByte(joinStr)
-	res, key := challenge.IterateAndFindBestMatch(byteArr)
-	fmt.Printf("out-> %s\t%s\n", res, key)
+	res, _ := challenge.IterateAndFindBestMatch(byteArr)
+	if string(res[:33]) != exp {
+		t.Error("\n\tExpected\t", exp, "\n\tbut got\t", string(res[:33]))
+	}
 }
 
 func TestChallenge7(t *testing.T) {
+	exp := "I'm back and I'm ringin' the bell"
 	loadedFile := utils.ReadFile("../data/challenge7.txt")
 	joinStr := strings.Join(loadedFile, "")
-	challenge.DecryptAES128Base64([]byte(joinStr), []byte("YELLOW SUBMARINE"))
+	res := challenge.DecryptAES128Base64([]byte(joinStr), []byte("YELLOW SUBMARINE"))
+	if string(res[:33]) != exp {
+		t.Error("\n\tExpected\t", exp, "\n\tbut got\t", string(res[:33]))
+	}
+}
+
+func TestChallenge8(t *testing.T) {
+	exp := "I'm back and I'm ringin' the bell"
+	loadedFile := utils.ReadFile("../data/challenge7.txt")
+	joinStr := strings.Join(loadedFile, "")
+	res := challenge.DecryptAES128Base64([]byte(joinStr), []byte("YELLOW SUBMARINE"))
+	if string(res[:33]) != exp {
+		t.Error("\n\tExpected\t", exp, "\n\tbut got\t", string(res[:33]))
+	}
 }
