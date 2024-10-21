@@ -197,3 +197,13 @@ func IterateAndFindBestMatch(b []byte) ([]byte, []byte) {
 	}
 	return rv, key
 }
+
+func DecryptAES128(input []byte, key []byte) []byte {
+		
+}
+
+func DecryptAES128Base64(input []byte, key []byte) []byte {
+	dec := DecryptAES128(input, key)
+	rv, _ := utils.Base64ByteToByte(dec)
+	return rv
+}

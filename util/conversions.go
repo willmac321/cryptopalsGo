@@ -28,6 +28,12 @@ func Base64ToByte(s string) ([]byte, error) {
 	return base64.StdEncoding.DecodeString(s)
 }
 
+func Base64ByteToByte(b []byte) ([]byte, error) {
+	dst := []byte{}
+	base64.StdEncoding.Decode(dst, b)
+	return dst, nil
+}
+
 func XOR(str []byte, compare []byte) ([]byte, error) {
 	res := make([]byte, len(str))
 

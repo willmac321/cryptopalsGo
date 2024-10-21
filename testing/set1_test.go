@@ -8,7 +8,7 @@ import (
 	"testing"
 )
 
-func TestSet1(t *testing.T) {
+func TestChallenge1(t *testing.T) {
 	testValue := "SSdtIGtpbGxpbmcgeW91ciBicmFpbiBsaWtlIGEgcG9pc29ub3VzIG11c2hyb29t"
 	res, _ := challenge.ConvertHexToBase64("49276d206b696c6c696e6720796f757220627261696e206c696b65206120706f69736f6e6f7573206d757368726f6f6d")
 	if res != testValue {
@@ -16,7 +16,7 @@ func TestSet1(t *testing.T) {
 	}
 }
 
-func TestSet2(t *testing.T) {
+func TestChallenge2(t *testing.T) {
 	str := "1c0111001f010100061a024b53535009181c"
 	key := "686974207468652062756c6c277320657965"
 	exp := "746865206b696420646f6e277420706c6179"
@@ -26,7 +26,7 @@ func TestSet2(t *testing.T) {
 	}
 }
 
-func TestSet3(t *testing.T) {
+func TestChallenge3(t *testing.T) {
 	str := "1b37373331363f78151b7f2b783431333d78397828372d363c78373e783a393b3736"
 	exp := "Cooking MC's like a pound of bacon"
 	res, _ := challenge.SingleByteXORHexStr(str)
@@ -36,7 +36,7 @@ func TestSet3(t *testing.T) {
 	fmt.Printf("out-> %s\n", res)
 }
 
-func TestSet4(t *testing.T) {
+func TestChallenge4(t *testing.T) {
 	exp := "Now that the party is jumping\n"
 	res, _ := challenge.FindSingleByteXOR("../data/challenge4.txt")
 	if res != exp {
@@ -45,7 +45,7 @@ func TestSet4(t *testing.T) {
 	fmt.Printf("out-> %s", res)
 }
 
-func TestSet5(t *testing.T) {
+func TestChallenge5(t *testing.T) {
 	str := "Burning 'em, if you ain't quick and nimble\nI go crazy when I hear a cymbal"
 	exp := "0b3637272a2b2e63622c2e69692a23693a2a3c6324202d623d63343c2a26226324272765272a282b2f20430a652e2c652a3124333a653e2b2027630c692b20283165286326302e27282f"
 	key := "ICE"
@@ -119,7 +119,7 @@ func TestBreakAndTranspose(t *testing.T) {
 	fmt.Printf("out-> %d\n", res)
 }
 
-func TestSet6Simple(t *testing.T) {
+func TestChallenge6Simple(t *testing.T) {
 	str := "Burning 'em, if you ain't quick and nimble\nI go crazy when I hear a cymbal"
 	_, exp := utils.HexToByte("0b3637272a2b2e63622c2e69692a23693a2a3c6324202d623d63343c2a26226324272765272a282b2f20430a652e2c652a3124333a653e2b2027630c692b20283165286326302e27282f")
 	res, _ := challenge.BreakRepeatingXOR(exp, 2, 40, 3)
@@ -128,10 +128,16 @@ func TestSet6Simple(t *testing.T) {
 	}
 }
 
-func TestSet6(t *testing.T) {
+func TestChallenge6(t *testing.T) {
 	loadedFile := utils.ReadFile("../data/challenge6.txt")
 	joinStr := strings.Join(loadedFile, "")
 	byteArr, _ := utils.Base64ToByte(joinStr)
-		res, key := challenge.IterateAndFindBestMatch(byteArr)
-		fmt.Printf("out-> %s\t%s\n", res, key)
+	res, key := challenge.IterateAndFindBestMatch(byteArr)
+	fmt.Printf("out-> %s\t%s\n", res, key)
+}
+
+func TestChallenge7(t *testing.T) {
+	loadedFile := utils.ReadFile("../data/challenge7.txt")
+	joinStr := strings.Join(loadedFile, "")
+	challenge.DecryptAES128Base64([]byte(joinStr), []byte("YELLOW SUBMARINE"))
 }
